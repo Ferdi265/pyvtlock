@@ -1,3 +1,10 @@
+"""
+Python Interface for the linux VT ioctls
+
+- see IOCTL_CONSOLE(2) (incomplete)
+- see <linux/vt.h> (not very well documented)
+"""
+
 import os
 import array
 import fcntl
