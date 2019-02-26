@@ -5,6 +5,7 @@ Python Interface for the linux VT ioctls
 - see <linux/vt.h> (not very well documented)
 """
 
+import io
 import os
 import array
 import fcntl
@@ -100,7 +101,7 @@ class VtEvent:
         return "<VtEvent {}>".format(self.__dict__)
 
 def open_console(nr):
-    return open("/dev/tty{}".format(nr), "w")
+    return io.TextIOWrapper(open("/dev/tty{}".format(nr), "r+b", buffering = 0), write_through = True)
 
 def get_active_console():
     try:
@@ -115,17 +116,13 @@ def get_active_console():
 def openqry(vt):
     newvt = array.array('i', [0])
 
-    if fcntl.ioctl(vt.fileno(), VT_OPENQRY, newvt, True) < 0:
-        raise RuntimeError("ioctl VT_OPENQRY failed")
-
+    fcntl.ioctl(vt.fileno(), VT_OPENQRY, newvt, True)
     return newvt.tolist()[0]
 
 def getmode(vt):
     vtmode = array.array('b', [0] * struct.calcsize(VtMode.FMT))
 
-    if fcntl.ioctl(vt.fileno(), VT_GETMODE, vtmode, True) < 0:
-        raise RuntimeError("ioctl VT_GETMODE failed")
-
+    fcntl.ioctl(vt.fileno(), VT_GETMODE, vtmode, True)
     return VtMode(*struct.unpack(VtMode.FMT, vtmode.tobytes()))
 
 def setmode(vt, mode):
@@ -133,15 +130,12 @@ def setmode(vt, mode):
         mode.mode, mode.waitv, mode.relsig, mode.acqsig, mode.frsig
     ))
 
-    if fcntl.ioctl(vt.fileno(), VT_SETMODE, vtmode, False) < 0:
-        raise RuntimeError("ioctl VT_SETMODE failed")
+    fcntl.ioctl(vt.fileno(), VT_SETMODE, vtmode, False)
 
 def getstate(vt):
     vtstat = array.array('b', [0] * struct.calcsize(VtStat.FMT))
 
-    if fcntl.ioctl(vt.fileno(), VT_GETSTATE, vtstat, True) < 0:
-        raise RuntimeError("ioctl VT_GETSTATE failed")
-
+    fcntl.ioctl(vt.fileno(), VT_GETSTATE, vtstat, True)
     return VtStat(*struct.unpack(VtStat.FMT, vtstat.tobytes()))
 
 def sendsig(vt, stat):
@@ -149,46 +143,38 @@ def sendsig(vt, stat):
         stat.active, stat.signal, stat.state
     ))
 
-    if fcntl.ioctl(vt.fileno(), VT_SENDSIG, vtstat, False) < 0:
-        raise RuntimeError("ioctl VT_SENDSIG failed")
+    fcntl.ioctl(vt.fileno(), VT_SENDSIG, vtstat, False)
 
 def reldisp(vt, allow):
-    if fcntl.ioctl(vt.fileno(), VT_RELDISP, VT_ACKACQ if allow else 0, False) < 0:
-        raise RuntimeError("ioctl VT_RELDISP failed")
+    fcntl.ioctl(vt.fileno(), VT_RELDISP, VT_ACKACQ if allow else 0, False)
 
 def activate(vt, nr):
-    if fcntl.ioctl(vt.fileno(), VT_ACTIVATE, nr, False) < 0:
-        raise RuntimeError("ioctl VT_ACTIVATE failed")
+    fcntl.ioctl(vt.fileno(), VT_ACTIVATE, nr, False)
 
 def waitactive(vt, nr):
-    if fcntl.ioctl(vt.fileno(), VT_WAITACTIVE, nr, False) < 0:
-        raise RuntimeError("ioctl VT_WAITACTIVE failed")
+    fcntl.ioctl(vt.fileno(), VT_WAITACTIVE, nr, False)
 
 def disallocate(vt, nr):
-    if fcntl.ioctl(vt.fileno(), VT_DISALLOCATE, nr, False) < 0:
-        raise RuntimeError("ioctl VT_DISALLOCATE failed")
+    fcntl.ioctl(vt.fileno(), VT_DISALLOCATE, nr, False)
 
 def resize(vt, siz):
     vtsiz = array.array('b', struct.pack(VtSizes.FMT,
         siz.rows, siz.cols, siz.scrollsize
     ))
 
-    if fcntl.ioctl(vt.fileno(), VT_RESIZE, vtsiz, False) < 0:
-        raise RuntimeError("ioctl VT_RESIZE failed")
+    fcntl.ioctl(vt.fileno(), VT_RESIZE, vtsiz, False)
 
 def resizex(vt, csiz):
     vtsiz = array.array('b', struct.pack(VtConSiz.FMT,
         csiz.rows, csiz.cols, csiz.scrollsize, csiz.clin, csiz.vcol, csiz.ccol
     ))
 
-    if fcntl.ioctl(vt.fileno(), VT_RESIZEX, vtsiz, False) < 0:
-        raise RuntimeError("ioctl VT_RESIZEX failed")
+    fcntl.ioctl(vt.fileno(), VT_RESIZEX, vtsiz, False)
 
 def gethifontmask(vt):
     hifont = array.array('H', [0])
 
-    if fcntl.ioctl(vt.fileno(), VT_GETHIFONTMASK, hifont, True) < 0:
-        raise RuntimeError("ioctl VT_GETHIFONTMASK failed")
+    fcntl.ioctl(vt.fileno(), VT_GETHIFONTMASK, hifont, True)
 
     return hifont.tolist()[0]
 
@@ -197,8 +183,7 @@ def waitevent(vt, event):
         event, 0, 0, 0, 0, 0, 0
     ))
 
-    if fcntl.ioctl(vt.fileno(), VT_WAITEVENT, vtevent, True) < 0:
-        raise RuntimeError("ioctl VT_WAITEVENT failed")
+    fcntl.ioctl(vt.fileno(), VT_WAITEVENT, vtevent, True)
 
     return VtEvent(*struct.unpack(VtEvent.FMT, vtevent.tobytes()))
 
@@ -207,5 +192,4 @@ def setactivate(vt, nr, mode):
         nr, mode.mode, mode.waitv, mode.relsig, mode.acqsig, mode.frsig
     ))
 
-    if fcntl.ioctl(vt.fileno(), VT_SETACTIVATE, vtconmode, False) < 0:
-        raise RuntimeError("ioctl VT_SETACTIVATE failed")
+    fcntl.ioctl(vt.fileno(), VT_SETACTIVATE, vtconmode, False)
