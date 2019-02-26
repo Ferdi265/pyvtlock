@@ -1,4 +1,4 @@
-COMMAND = "/usr/bin/python3", "/home/yrlf/Programming/py/pyvtlock/main.py"
+COMMAND = "/usr/bin/env", "python3", "/home/yrlf/Programming/py/pyvtlock/main.py"
 DEBUG = 0
 OPT = -Os
 

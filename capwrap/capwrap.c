@@ -70,6 +70,6 @@ int main() {
     LOG("\n");
 
     execv(argv[0], argv);
-    perror("[!] execvp");
+    perror("[!] execv");
     return -1;
 }
