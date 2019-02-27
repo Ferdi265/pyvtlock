@@ -24,4 +24,5 @@ install: cap/capwrap
 	install -D -m 0644 30-pyvtlock-tty63.rules '$(DESTDIR)$(PREFIX)/lib/udev/rules.d/30-pyvtlock-tty63.rules'
 	install -D -g tty -m 2755 cap/capwrap '$(DESTDIR)$(PREFIX)/lib/pyvtlock/capwrap'
 	setcap 'cap_sys_tty_config=ep cap_setgid=ep' '$(DESTDIR)$(PREFIX)/lib/pyvtlock/capwrap'
+	mkdir -p '$(DESTDIR)$(PREFIX)/bin'
 	ln -s '$(PREFIX)/lib/pyvtlock/capwrap' '$(DESTDIR)$(PREFIX)/bin/pyvtlock'
