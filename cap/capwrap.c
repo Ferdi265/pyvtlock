@@ -1,6 +1,8 @@
 #include <sys/capability.h>
 #include <sys/prctl.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <grp.h>
 
@@ -14,10 +16,16 @@
     #define COMMAND "./captest"
 #endif
 
+#ifndef KEEPENV
+    #define KEEPENV
+#endif
+
 #define GIDSETSIZE 256
 gid_t groups[GIDSETSIZE];
 
 char * argv[] = { COMMAND, NULL };
+char * keep_env[] = { KEEPENV };
+#define ARRSIZ(x) ((sizeof x) / (sizeof x[0]))
 
 int main() {
     cap_t caps = cap_get_proc();
@@ -69,7 +77,27 @@ int main() {
     }
     LOG("\n");
 
-    execv(argv[0], argv);
+    char * envp[ARRSIZ(keep_env) + 1];
+    int envlen = 0;
+    LOG("[1] Environment:");
+    for (unsigned int i = 0; i < ARRSIZ(keep_env); i++) {
+        char * v = getenv(keep_env[i]);
+        if (v != NULL) {
+            char * buf = malloc(strlen(keep_env[i]) + strlen(v) + 2);
+            if (buf == NULL) {
+                perror("[!] malloc");
+                return -1;
+            }
+            sprintf(buf, "%s=%s", keep_env[i], v);
+
+            LOG(" %s", buf);
+            envp[envlen++] = buf;
+        }
+    }
+    LOG("\n");
+    envp[envlen] = NULL;
+
+    execve(argv[0], argv, envp);
     perror("[!] execv");
     return -1;
 }

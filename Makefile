@@ -1,11 +1,12 @@
 DESTDIR =
 
 COMMAND = "/usr/bin/python3", "-I", "/usr/lib/pyvtlock/main.py"
+KEEPENV = "USER", "MOTD"
 DEBUG = 0
 OPT = -Os
 
 CC = gcc
-CFLAGS = -Wall -Wextra $(OPT) '-DDEBUG=$(DEBUG)' '-DCOMMAND=$(COMMAND)' $(EXTRACFLAGS)
+CFLAGS = -Wall -Wextra $(OPT) '-DDEBUG=$(DEBUG)' '-DCOMMAND=$(COMMAND)' '-DKEEPENV=$(KEEPENV)' $(EXTRACFLAGS)
 
 all: cap/capwrap cap/captest
 

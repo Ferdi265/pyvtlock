@@ -1,6 +1,9 @@
 #include <sys/capability.h>
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
+
+extern char ** environ;
 
 #define GIDSETSIZE 256
 gid_t groups[GIDSETSIZE];
@@ -20,6 +23,14 @@ int main() {
     printf("[+] Groups: gid = %d, egid = %d, supp =", gid, egid);
     for (int i = 0; i < numgids; i++) {
         printf(" %d", groups[i]);
+    }
+    printf("\n");
+
+    printf("[+] Environment:");
+    char ** envp = environ;
+    while (*envp != NULL) {
+        printf(" %s", *envp);
+        envp++;
     }
     printf("\n");
 }
