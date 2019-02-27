@@ -1,7 +1,6 @@
 DESTDIR =
-PREFIX = /usr
 
-COMMAND = "$(PREFIX)/bin/python3", "$(PREFIX)/lib/pyvtlock/main.py"
+COMMAND = "/usr/bin/python3", "/usr/lib/pyvtlock/main.py"
 DEBUG = 0
 OPT = -Os
 
@@ -16,13 +15,15 @@ cap/capwrap: cap/capwrap.c
 cap/captest: cap/captest.c
 	$(CC) $(CFLAGS) -o $@ $^ -lcap
 
-.PHONY: clean install
+.PHONY: clean install setcap
 clean:
 	rm -f cap/capwrap cap/captest
 
 install: cap/capwrap
-	install -D -m 0644 30-pyvtlock-tty63.rules '$(DESTDIR)$(PREFIX)/lib/udev/rules.d/30-pyvtlock-tty63.rules'
-	install -D -g tty -m 2755 cap/capwrap '$(DESTDIR)$(PREFIX)/lib/pyvtlock/capwrap'
-	setcap 'cap_sys_tty_config=ep cap_setgid=ep' '$(DESTDIR)$(PREFIX)/lib/pyvtlock/capwrap'
-	mkdir -p '$(DESTDIR)$(PREFIX)/bin'
-	ln -s '$(PREFIX)/lib/pyvtlock/capwrap' '$(DESTDIR)$(PREFIX)/bin/pyvtlock'
+	install -D -m 0644 30-pyvtlock-tty63.rules '$(DESTDIR)/usr/lib/udev/rules.d/30-pyvtlock-tty63.rules'
+	install -D -g tty -m 2755 cap/capwrap '$(DESTDIR)/usr/lib/pyvtlock/capwrap'
+	mkdir -p '$(DESTDIR)/usr/bin'
+	ln -s '/usr/lib/pyvtlock/capwrap' '$(DESTDIR)/usr/bin/pyvtlock'
+
+setcap:
+	setcap 'cap_sys_tty_config=ep cap_setgid=ep' '$(DESTDIR)/usr/lib/pyvtlock/capwrap'
