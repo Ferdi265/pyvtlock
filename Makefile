@@ -1,6 +1,6 @@
 DESTDIR =
 
-COMMAND = "/usr/bin/python3", "/usr/lib/pyvtlock/main.py"
+COMMAND = "/usr/bin/python3", "-I", "/usr/lib/pyvtlock/main.py"
 DEBUG = 0
 OPT = -Os
 
