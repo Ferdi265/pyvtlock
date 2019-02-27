@@ -16,7 +16,7 @@ cap/capwrap: cap/capwrap.c
 cap/captest: cap/captest.c
 	$(CC) $(CFLAGS) -o $@ $^ -lcap
 
-.PHONY: clean install setcap
+.PHONY: clean install setcap install_setcap
 clean:
 	rm -f cap/capwrap cap/captest
 
@@ -28,5 +28,8 @@ install: cap/capwrap
 	mkdir -p '$(DESTDIR)/usr/bin'
 	ln -s '/usr/lib/pyvtlock/capwrap' '$(DESTDIR)/usr/bin/pyvtlock'
 
-setcap:
+setcap: cap/capwrap
+	setcap 'cap_sys_tty_config=ep cap_setgid=ep' cap/capwrap
+
+install_setcap:
 	setcap 'cap_sys_tty_config=ep cap_setgid=ep' '$(DESTDIR)/usr/lib/pyvtlock/capwrap'
