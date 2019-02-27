@@ -1,10 +1,13 @@
 import os
-import vt
+import sys
 import pam
 import time
 import signal
 import socket
 import termios
+
+sys.path.append("/usr/lib/pyvtlock/")
+import vt
 
 CLEAR_TERM = b"\x1b[2J\x1b[H"
 USER = os.environ["USER"]
