@@ -6,6 +6,10 @@ locking program.
 It is mostly implemented in python instead of C and uses
 [python-pam](https://pypi.org/project/python-pam/) to check the user's password.
 
+Disclaimer: This project came into existance since vlock-original stopped
+working on my ArchLinux system with the 2019 update of pambase. It is therefore
+quite hastily developed, and a little hacky: YMMV.
+
 # Features
 
 - It switches to a different VT to display the lock screen in order to also work
