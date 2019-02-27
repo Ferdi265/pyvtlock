@@ -1,7 +1,7 @@
 DESTDIR =
 
 COMMAND = "/usr/bin/python3", "-I", "/usr/lib/pyvtlock/main.py"
-KEEPENV = "USER", "MOTD"
+KEEPENV = "USER", "MOTD", "XDG_VTNR"
 DEBUG = 0
 OPT = -Os
 
