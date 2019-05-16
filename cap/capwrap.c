@@ -21,7 +21,7 @@
 #endif
 
 #define GIDSETSIZE 256
-gid_t groups[GIDSETSIZE];
+gid_t groups[GIDSETSIZE + 1];
 
 #define ARRSIZ(x) ((sizeof x) / (sizeof x[0]))
 char * base_argv[] = { COMMAND };
@@ -53,7 +53,7 @@ int main(int argc, char ** argv) {
         perror("[!] getgroups");
         return -1;
     } else if (numgids == 256) {
-        LOG("[!] too many groups!");
+        LOG("[!] too many groups, group list truncated!");
     }
     LOG("[1] Groups: gid = %d, egid = %d, supp =", gid, egid);
     for (int i = 0; i < numgids; i++) {
