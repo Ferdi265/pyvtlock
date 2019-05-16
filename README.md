@@ -15,6 +15,11 @@ quite hastily developed, and a little hacky: YMMV.
 - It switches to a different VT to display the lock screen in order to also work
   on an X or Wayland desktop.
 - It displays a customizable lock screen message before each login try.
+- Optionally forks into the background: the parent process exits as soon as the
+  screen is fully locked, the child exits when the screen is unlocked (--fork)
+- Optionally prints the PID of the locker process or writes it to a file (--pid
+  and --pidfile)
+- Gracefully unlocks when killed via SIGINT, SIGTERM, and SIGHUP
 
 # Notable differences from vlock-original
 
