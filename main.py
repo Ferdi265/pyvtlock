@@ -84,12 +84,11 @@ def main(args):
         success = True
         setup()
         lock_loop()
-    except:
+    except Exception:
         success = False
         traceback.print_exc()
-    finally:
-        cleanup()
 
+    cleanup()
     if not success:
         sys.exit(1)
 
