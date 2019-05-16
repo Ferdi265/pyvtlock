@@ -25,6 +25,7 @@ nvt = None
 oldmode = None
 oldattr = None
 chan = None
+pidfile = None
 
 def parse():
     parser = ArgumentParser(
@@ -33,8 +34,8 @@ def parse():
         description = "A python-based console locking program",
         epilog = textwrap.dedent("""\
         environmet variables:
-          USER        the user whose password can be used to unlock the session
-          MOTD        the message to display while locked
+          USER               the user whose password can be used to unlock the session
+          MOTD               the message to display while locked
         """)
     )
 
@@ -44,11 +45,24 @@ def parse():
         help = "fork into the background once the screen is locked"
     )
 
+    parser.add_argument(
+        "-p", "--pid",
+        action = "store_true", default = False,
+        help = "print the process id of the console locker"
+    )
+
+    parser.add_argument(
+        "-P", "--pidfile",
+        action = "store", default = None, metavar = "f",
+        help = "write the process id of the console locker to f"
+    )
+
     args = parser.parse_args()
     main(args)
 
 def main(args):
     global chan
+    global pidfile
 
     if args.fork:
         chan = Signal()
@@ -56,7 +70,13 @@ def main(args):
             chan.wait()
             sys.exit(0)
 
-    setup()
+    if args.pid:
+        print(os.getpid())
+
+    if args.pidfile != None:
+        pidfile = args.pidfile
+        with open(pidfile, "w") as f:
+            f.write("{}\n".format(os.getpid()))
 
     time.sleep(.1)
 
@@ -79,6 +99,9 @@ def setup():
 
 def cleanup():
     cleanup_vt()
+
+    if pidfile != None:
+        os.remove(pidfile)
 
     cvt.close()
 
