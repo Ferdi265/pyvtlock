@@ -23,11 +23,12 @@
 #define GIDSETSIZE 256
 gid_t groups[GIDSETSIZE];
 
-char * argv[] = { COMMAND, NULL };
-char * keep_env[] = { KEEPENV };
 #define ARRSIZ(x) ((sizeof x) / (sizeof x[0]))
+char * base_argv[] = { COMMAND };
+char * keep_env[] = { KEEPENV };
+char * envp[ARRSIZ(keep_env) + 1];
 
-int main() {
+int main(int argc, char ** argv) {
     cap_t caps = cap_get_proc();
     LOG("[1] Capabilities: %s\n", cap_to_text(caps, NULL));
 
@@ -77,7 +78,6 @@ int main() {
     }
     LOG("\n");
 
-    char * envp[ARRSIZ(keep_env) + 1];
     int envlen = 0;
     LOG("[1] Environment:");
     for (unsigned int i = 0; i < ARRSIZ(keep_env); i++) {
@@ -97,7 +97,26 @@ int main() {
     LOG("\n");
     envp[envlen] = NULL;
 
-    execve(argv[0], argv, envp);
+    int base_argc = ARRSIZ(base_argv) - 1;
+    int add_argc = argc - 1;
+    char ** args = malloc((base_argc + add_argc + 1) * (sizeof (char *)));
+    if (args == NULL) {
+        perror("[!] malloc");
+    }
+
+    LOG("[1] Arguments:");
+    for (int i = 0; i < base_argc; i++) {
+        args[i] = base_argv[i];
+        LOG(" %s", args[i]);
+    }
+    for (int i = 0; i < add_argc; i++) {
+        args[base_argc + i] = argv[i + 1];
+        LOG(" %s", args[base_argc + i]);
+    }
+    LOG("\n");
+    args[base_argc + add_argc] = NULL;
+
+    execve(args[0], args, envp);
     perror("[!] execv");
     return -1;
 }

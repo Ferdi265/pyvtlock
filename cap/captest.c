@@ -8,7 +8,7 @@ extern char ** environ;
 #define GIDSETSIZE 256
 gid_t groups[GIDSETSIZE];
 
-int main() {
+int main(int argc, char ** argv) {
     cap_t caps = cap_get_proc();
     printf("[+] Capabilities: %s\n", cap_to_text(caps, NULL));
 
@@ -31,6 +31,12 @@ int main() {
     while (*envp != NULL) {
         printf(" %s", *envp);
         envp++;
+    }
+    printf("\n");
+
+    printf("[+] Arguments:");
+    for (int i = 1; i < argc; i++) {
+        printf(" %s", argv[i]);
     }
     printf("\n");
 }
