@@ -106,10 +106,12 @@ def cleanup():
 
 def setup_sig():
     signal.signal(signal.SIGINT, unlock_hook)
+    signal.signal(signal.SIGTERM, unlock_hook)
+    signal.signal(signal.SIGHUP, unlock_hook)
 
 def unlock_hook(sn, f):
     cleanup()
-    sys.exit(0)
+    sys.exit(sn == signal.SIGINT)
 
 def setup_vt():
     global nnr
