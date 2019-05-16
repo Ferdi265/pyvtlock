@@ -5,6 +5,8 @@ import time
 import signal
 import socket
 import termios
+import textwrap
+from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
 sys.path.append("/usr/lib/pyvtlock/")
 import vt
@@ -22,6 +24,19 @@ oldmode = None
 oldattr = None
 
 def main():
+    parser = ArgumentParser(
+        "pyvtlock",
+        formatter_class = RawDescriptionHelpFormatter,
+        description = "A python-based console locking program",
+        epilog = textwrap.dedent("""\
+        environmet variables:
+          USER        the user whose password can be used to unlock the session
+          MOTD        the message to display while locked
+        """)
+    )
+
+    args = parser.parse_args()
+
     setup()
 
 def setup():
