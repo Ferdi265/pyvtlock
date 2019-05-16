@@ -10,6 +10,7 @@ from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
 sys.path.append("/usr/lib/pyvtlock/")
 import vt
+from forksignal import Signal
 
 CLEAR_TERM = b"\x1b[2J\x1b[H"
 USER = os.environ["USER"]
@@ -22,8 +23,11 @@ nnr = None
 nvt = None
 oldmode = None
 oldattr = None
+chan = None
 
 def main():
+    global chan
+
     parser = ArgumentParser(
         "pyvtlock",
         formatter_class = RawDescriptionHelpFormatter,
@@ -35,7 +39,19 @@ def main():
         """)
     )
 
+    parser.add_argument(
+        "-f", "--fork",
+        action = "store_true", default = False,
+        help = "fork into the background once the screen is locked"
+    )
+
     args = parser.parse_args()
+
+    if args.fork:
+        chan = Signal()
+        if chan.PARENT:
+            chan.wait()
+            sys.exit(0)
 
     setup()
 
@@ -74,6 +90,9 @@ def setup_vt():
     oldmode = vt.getmode(nvt)
     newmode = vt.VtMode(vt.VT_PROCESS, 0, signal.SIGUSR1, signal.SIGUSR2, signal.SIGHUP)
     vt.setmode(nvt, newmode)
+
+    if chan != None:
+        chan.signal()
 
 def cleanup_vt():
     if nnr == None or nvt == None or oldmode == None:
