@@ -27,13 +27,20 @@ def main():
 def setup():
     time.sleep(.1)
 
+    setup_sig()
     setup_vt()
     lock_loop()
     cleanup_vt()
 
     cvt.close()
 
+def setup_sig():
+    signal.signal(signal.SIGINT, unlock_hook)
 
+def unlock_hook(sn, f):
+    cleanup_vt()
+    cvt.close()
+    sys.exit(0)
 
 def setup_vt():
     global nnr
