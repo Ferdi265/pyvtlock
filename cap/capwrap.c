@@ -97,7 +97,7 @@ int main(int argc, char ** argv) {
     LOG("\n");
     envp[envlen] = NULL;
 
-    int base_argc = ARRSIZ(base_argv) - 1;
+    int base_argc = ARRSIZ(base_argv);
     int add_argc = argc - 1;
     char ** args = malloc((base_argc + add_argc + 1) * (sizeof (char *)));
     if (args == NULL) {
