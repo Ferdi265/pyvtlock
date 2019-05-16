@@ -21,57 +21,19 @@ nvt = None
 oldmode = None
 oldattr = None
 
-def lock_motd():
-    nvt.buffer.write(CLEAR_TERM)
-    print(MOTD, file = nvt)
-    print("{} locked by {}".format(HOST, USER), file = nvt)
+def main():
+    setup()
 
-def read_pwd(prompt, newline = True):
-    print(prompt, end = "", file = nvt)
+def setup():
+    time.sleep(.1)
 
-    data = nvt.readline()
-    if data[-1] == "\n":
-        data = data[:-1]
+    setup_vt()
+    lock_loop()
+    cleanup_vt()
 
-    if newline:
-        print(file = nvt)
+    cvt.close()
 
-    return data
 
-def lock_iteration():
-    lock_motd()
-    read_pwd("", False)
-
-    p = pam.pam()
-    pwd = read_pwd("Password: ")
-    if p.authenticate(USER, pwd):
-        return True
-    else:
-        print("pyvtlock: {}".format(p.reason), file = nvt)
-        time.sleep(1.5)
-        return False
-
-def lock_loop():
-    while not lock_iteration():
-        pass
-
-def setup_term():
-    global oldattr
-
-    oldattr = termios.tcgetattr(nvt.fileno())
-    newattr = termios.tcgetattr(nvt.fileno())
-    newattr[3] &= ~termios.ECHO
-
-    termios.tcsetattr(nvt.fileno(), termios.TCSADRAIN, newattr)
-    nvt.buffer.write(CLEAR_TERM)
-
-def cleanup_term():
-    global oldattr
-
-    termios.tcsetattr(nvt.fileno(), termios.TCSADRAIN, oldattr)
-    oldattr = None
-
-    nvt.buffer.write(CLEAR_TERM)
 
 def setup_vt():
     global nnr
@@ -92,9 +54,9 @@ def setup_vt():
     vt.setmode(nvt, newmode)
 
 def cleanup_vt():
-    global nnr
-    global nvt
-    global oldmode
+    if nnr == None or nvt == None or oldmode == None:
+        return
+
     vt.setmode(nvt, oldmode)
     vt.activate(cvt, cnr)
 
@@ -102,18 +64,66 @@ def cleanup_vt():
     signal.signal(signal.SIGUSR2, signal.SIG_DFL)
 
     cleanup_term()
+
+def setup_term():
+    global oldattr
+
+    oldattr = termios.tcgetattr(nvt.fileno())
+    newattr = termios.tcgetattr(nvt.fileno())
+    newattr[3] &= ~termios.ECHO
+
+    termios.tcsetattr(nvt.fileno(), termios.TCSADRAIN, newattr)
+    nvt.buffer.write(CLEAR_TERM)
+
+def cleanup_term():
+    global oldattr
+    global nnr
+    global nvt
+    global oldmode
+
+    termios.tcsetattr(nvt.fileno(), termios.TCSADRAIN, oldattr)
+    oldattr = None
+
+    nvt.buffer.write(CLEAR_TERM)
     nvt.close()
 
     nnr = None
     nvt = None
     oldmode = None
 
+def lock_loop():
+    while not lock_iteration():
+        pass
+
+def lock_iteration():
+    lock_motd()
+    read_pwd("", False)
+
+    p = pam.pam()
+    pwd = read_pwd("Password: ")
+    if p.authenticate(USER, pwd):
+        return True
+    else:
+        print("pyvtlock: {}".format(p.reason), file = nvt)
+        time.sleep(1.5)
+        return False
+
+def lock_motd():
+    nvt.buffer.write(CLEAR_TERM)
+    print(MOTD, file = nvt)
+    print("{} locked by {}".format(HOST, USER), file = nvt)
+
+def read_pwd(prompt, newline = True):
+    print(prompt, end = "", file = nvt)
+
+    data = nvt.readline()
+    if data[-1] == "\n":
+        data = data[:-1]
+
+    if newline:
+        print(file = nvt)
+
+    return data
+
 if __name__ == '__main__':
-    cvt = vt.open_console(vt.get_active_console())
-    time.sleep(.1)
-
-    setup_vt()
-    lock_loop()
-    cleanup_vt()
-
-    cvt.close()
+    main()
