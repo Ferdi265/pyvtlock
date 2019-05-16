@@ -6,6 +6,7 @@ import signal
 import socket
 import termios
 import textwrap
+import traceback
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
 sys.path.append("/usr/lib/pyvtlock/")
@@ -25,9 +26,7 @@ oldmode = None
 oldattr = None
 chan = None
 
-def main():
-    global chan
-
+def parse():
     parser = ArgumentParser(
         "pyvtlock",
         formatter_class = RawDescriptionHelpFormatter,
@@ -46,6 +45,10 @@ def main():
     )
 
     args = parser.parse_args()
+    main(args)
+
+def main(args):
+    global chan
 
     if args.fork:
         chan = Signal()
@@ -55,12 +58,26 @@ def main():
 
     setup()
 
-def setup():
     time.sleep(.1)
 
+    try:
+        success = True
+        setup()
+        lock_loop()
+    except:
+        success = False
+        traceback.print_exc()
+    finally:
+        cleanup()
+
+    if not success:
+        sys.exit(1)
+
+def setup():
     setup_sig()
     setup_vt()
-    lock_loop()
+
+def cleanup():
     cleanup_vt()
 
     cvt.close()
@@ -69,8 +86,7 @@ def setup_sig():
     signal.signal(signal.SIGINT, unlock_hook)
 
 def unlock_hook(sn, f):
-    cleanup_vt()
-    cvt.close()
+    cleanup()
     sys.exit(0)
 
 def setup_vt():
@@ -167,4 +183,4 @@ def read_pwd(prompt, newline = True):
     return data
 
 if __name__ == '__main__':
-    main()
+    parse()
