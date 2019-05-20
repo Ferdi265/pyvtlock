@@ -12,13 +12,13 @@ quite hastily developed, and a little hacky: YMMV.
 
 # Features
 
-- It switches to a different VT to display the lock screen in order to also work
+- Switches to a different VT to display the lock screen in order to also work
   on an X or Wayland desktop.
-- It displays a customizable lock screen message before each login try.
+- Displays a customizable lock screen message before each login try.
 - Optionally forks into the background: the parent process exits as soon as the
-  screen is fully locked, the child exits when the screen is unlocked (--fork)
-- Optionally prints the PID of the locker process or writes it to a file (--pid
-  and --pidfile)
+  screen is fully locked, the child exits when the screen is unlocked (`--fork`)
+- Optionally prints the PID of the locker process or writes it to a file (`--pid`
+  and `--pidfile`)
 - Gracefully unlocks when killed via SIGINT, SIGTERM, and SIGHUP
 
 # Notable differences from vlock-original
@@ -36,6 +36,9 @@ quite hastily developed, and a little hacky: YMMV.
 The VT switching and locking is implemented via the Linux capability
 `CAP_SYS_TTY_CONFIG`, and setting the group `tty` as an additional supplementary
 group is done via `CAP_SETGID`.
+
+The `tty` group is also given permission to write to `/dev/tty63` via a udev
+rule.
 
 These two capabilities are given to `/usr/lib/pyvtlock/capwrap`, which passes
 the first on to the python interpreter via _ambient capabilities_, and drops the
