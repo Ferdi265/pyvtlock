@@ -33,8 +33,9 @@ def parse():
         formatter_class = RawDescriptionHelpFormatter,
         description = "A python-based console locking program",
         epilog = textwrap.dedent("""\
-        environmet variables:
+        environment variables:
           USER               the user whose password can be used to unlock the session
+          XDG_VTNR           the tty number to open and return to after unlocking
           MOTD               the message to display while locked
         """)
     )
