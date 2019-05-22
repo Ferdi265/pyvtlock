@@ -31,6 +31,14 @@ install: cap/capwrap
 	mkdir -p '$(DESTDIR)/$(PREFIX)/bin'
 	ln -sf '$(PREFIX)/lib/pyvtlock/capwrap' '$(DESTDIR)/$(PREFIX)/bin/pyvtlock'
 
+uninstall:
+	rm -f '$(DESTDIR)/$(PREFIX)/lib/udev/rules.d/99-pyvtlock-tty63.rules'
+	rm -f '$(DESTDIR)/$(PREFIX)/lib/pyvtlock/capwrap'
+	rm -f '$(DESTDIR)/$(PREFIX)/lib/pyvtlock/main.py'
+	rm -f '$(DESTDIR)/$(PREFIX)/lib/pyvtlock/vt.py'
+	rm -f '$(DESTDIR)/$(PREFIX)/lib/pyvtlock/forksignal.py'
+	rm -f '$(DESTDIR)/$(PREFIX)/bin/pyvtlock'
+
 setgid: cap/capwrap
 	chgrp tty cap/capwrap
 	chmod 2755 cap/capwrap
