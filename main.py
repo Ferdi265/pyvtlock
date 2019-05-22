@@ -155,7 +155,7 @@ def setup_term():
     newattr[3] &= ~termios.ECHO
 
     termios.tcsetattr(nvt.fileno(), termios.TCSADRAIN, newattr)
-    nvt.buffer.write(CLEAR_TERM)
+    write_bytes(nvt, CLEAR_TERM)
 
 def cleanup_term():
     global oldattr
@@ -166,7 +166,7 @@ def cleanup_term():
     termios.tcsetattr(nvt.fileno(), termios.TCSADRAIN, oldattr)
     oldattr = None
 
-    nvt.buffer.write(CLEAR_TERM)
+    write_bytes(nvt, CLEAR_TERM)
     nvt.close()
 
     nnr = None
@@ -191,8 +191,7 @@ def lock_iteration():
         return False
 
 def lock_motd():
-    nvt.buffer.write(CLEAR_TERM)
-    nvt.buffer.write(MOTD + b"\n")
+    write_bytes(nvt, CLEAR_TERM + MOTD + b"\n")
     print("{} locked by {}".format(HOST, USER), file = nvt)
 
 def read_pwd(prompt, newline = True):
@@ -206,6 +205,10 @@ def read_pwd(prompt, newline = True):
         print(file = nvt)
 
     return data
+
+def write_bytes(f, data):
+    while len(data) > 0:
+        data = data[f.buffer.write(data):]
 
 if __name__ == '__main__':
     parse()
