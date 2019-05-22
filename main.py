@@ -9,7 +9,7 @@ import textwrap
 import traceback
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
-sys.path.append("/usr/lib/pyvtlock/")
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 import vt
 from forksignal import Signal
 
