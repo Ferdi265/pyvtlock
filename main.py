@@ -9,14 +9,14 @@ import textwrap
 import traceback
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
-sys.path.append("/usr/lib/pyvtlock/")
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 import vt
 from forksignal import Signal
 
 CLEAR_TERM = b"\x1b[2J\x1b[H"
 USER = os.environ["USER"]
 HOST = socket.gethostname()
-MOTD = os.environ.get("MOTD", "\x1b[1;37m<< \x1b[1;36mpyvtlock \x1b[1;37m>>\x1b[0m\n")
+MOTD = os.environb.get(b"MOTD", b"\x1b[1;37m<< \x1b[1;36mpyvtlock \x1b[1;37m>>\x1b[0m\n")
 
 cnr = vt.get_active_console()
 cvt = vt.open_console(cnr)
@@ -192,7 +192,7 @@ def lock_iteration():
 
 def lock_motd():
     nvt.buffer.write(CLEAR_TERM)
-    print(MOTD, file = nvt)
+    nvt.buffer.write(MOTD + b"\n")
     print("{} locked by {}".format(HOST, USER), file = nvt)
 
 def read_pwd(prompt, newline = True):

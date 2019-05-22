@@ -1,6 +1,8 @@
 DESTDIR =
+PREFIX  = /usr/local
+PYTHON_PREFIX = /usr
 
-COMMAND = "/usr/bin/python3", "-I", "/usr/lib/pyvtlock/main.py"
+COMMAND = "$(PYTHON_PREFIX)/bin/python3", "-I", "$(PREFIX)/lib/pyvtlock/main.py"
 KEEPENV = "USER", "MOTD", "XDG_VTNR"
 DEBUG = 0
 OPT = -Os
@@ -21,13 +23,13 @@ clean:
 	rm -f cap/capwrap cap/captest
 
 install: cap/capwrap
-	install -D -m 0644 99-pyvtlock-tty63.rules '$(DESTDIR)/usr/lib/udev/rules.d/99-pyvtlock-tty63.rules'
-	install -D -g tty -m 2755 cap/capwrap '$(DESTDIR)/usr/lib/pyvtlock/capwrap'
-	install -D -m 644 main.py '$(DESTDIR)/usr/lib/pyvtlock/main.py'
-	install -D -m 644 vt.py '$(DESTDIR)/usr/lib/pyvtlock/vt.py'
-	install -D -m 644 forksignal.py '$(DESTDIR)/usr/lib/pyvtlock/forksignal.py'
-	mkdir -p '$(DESTDIR)/usr/bin'
-	ln -s '/usr/lib/pyvtlock/capwrap' '$(DESTDIR)/usr/bin/pyvtlock'
+	install -D -m 0644 99-pyvtlock-tty63.rules '$(DESTDIR)/$(PREFIX)/lib/udev/rules.d/99-pyvtlock-tty63.rules'
+	install -D -g tty -m 2755 cap/capwrap '$(DESTDIR)/$(PREFIX)/lib/pyvtlock/capwrap'
+	install -D -m 644 main.py '$(DESTDIR)/$(PREFIX)/lib/pyvtlock/main.py'
+	install -D -m 644 vt.py '$(DESTDIR)/$(PREFIX)/lib/pyvtlock/vt.py'
+	install -D -m 644 forksignal.py '$(DESTDIR)/$(PREFIX)/lib/pyvtlock/forksignal.py'
+	mkdir -p '$(DESTDIR)/$(PREFIX)/bin'
+	ln -sf '$(PREFIX)/lib/pyvtlock/capwrap' '$(DESTDIR)/$(PREFIX)/bin/pyvtlock'
 
 setgid: cap/capwrap
 	chgrp tty cap/capwrap
@@ -36,5 +38,5 @@ setgid: cap/capwrap
 setcap: cap/capwrap
 	setcap 'cap_sys_tty_config=ep cap_setgid=ep' cap/capwrap
 
-install_setcap:
-	setcap 'cap_sys_tty_config=ep cap_setgid=ep' '$(DESTDIR)/usr/lib/pyvtlock/capwrap'
+install_setcap: install
+	setcap 'cap_sys_tty_config=ep cap_setgid=ep' '$(DESTDIR)/$(PREFIX)/lib/pyvtlock/capwrap'
