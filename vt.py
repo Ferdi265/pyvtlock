@@ -101,7 +101,7 @@ class VtEvent:
         return "<VtEvent {}>".format(self.__dict__)
 
 def open_console(nr):
-    return io.TextIOWrapper(open("/dev/tty{}".format(nr), "r+b", buffering = 0), write_through = True)
+    return io.TextIOWrapper(open("/dev/tty{}".format(nr), "r+b", buffering = 0), encoding = "UTF-8", write_through = True)
 
 def get_active_console():
     try:
