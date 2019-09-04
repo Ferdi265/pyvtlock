@@ -76,8 +76,11 @@ def main(args):
 
     if args.pidfile != None:
         pidfile = args.pidfile
-        with open(pidfile, "w") as f:
-            f.write("{}\n".format(os.getpid()))
+        try:
+            with open(pidfile, "x") as f:
+                f.write("{}\n".format(os.getpid()))
+        except FileExistsError:
+            sys.exit(1)
 
     time.sleep(.1)
 
