@@ -65,6 +65,13 @@ def main(args):
     global chan
     global pidfile
 
+    if args.pidfile != None:
+        pidfile = args.pidfile
+        try:
+            pidfd = open(pidfile, "x")
+        except FileExistsError:
+            sys.exit(1)
+
     if args.fork:
         chan = Signal()
         if chan.PARENT:
@@ -75,12 +82,8 @@ def main(args):
         print(os.getpid())
 
     if args.pidfile != None:
-        pidfile = args.pidfile
-        try:
-            with open(pidfile, "x") as f:
-                f.write("{}\n".format(os.getpid()))
-        except FileExistsError:
-            sys.exit(1)
+        pidfd.write("{}\n".format(os.getpid()))
+        pidfd.close()
 
     time.sleep(.1)
 
