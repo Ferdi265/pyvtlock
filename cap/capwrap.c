@@ -52,7 +52,7 @@ int main(int argc, char ** argv) {
     if (numgids == -1) {
         perror("[!] getgroups");
         return -1;
-    } else if (numgids == 256) {
+    } else if (numgids == GIDSETSIZE) {
         LOG("[!] too many groups, group list truncated!");
     }
     LOG("[1] Groups: gid = %d, egid = %d, supp =", gid, egid);
