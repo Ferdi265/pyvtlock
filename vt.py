@@ -165,7 +165,7 @@ def resize(vt, siz):
     fcntl.ioctl(vt.fileno(), VT_RESIZE, vtsiz, False)
 
 def resizex(vt, csiz):
-    vtsiz = array.array('b', struct.pack(VtConSiz.FMT,
+    vtsiz = array.array('b', struct.pack(VtConSize.FMT,
         csiz.rows, csiz.cols, csiz.scrollsize, csiz.clin, csiz.vcol, csiz.ccol
     ))
 
