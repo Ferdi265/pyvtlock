@@ -48,3 +48,9 @@ This means that in the worst case (assuming `/usr/lib/pyvtlock/capwrap` has no
 vulnerabilities), the `tty` group and `CAP_SYS_TTY_CONFIG` capability will be
 accessible to any attacker on the system if they can trick the python
 interpreter into executing an arbitrary command.
+
+Note that you can escape from `pyvtlock` using the Magic SysRq key combination
+`Alt+SysRq+k`. You can work around this by disabling keyboard control SysRqs
+(bit '4' of the `kernel.sysrq` sysctl bitmask). This also disallows the use of
+`Alt+SysRq+r`, breaking the `r` in the popular Emergency Reboot sequence
+`reisub`.
