@@ -36,6 +36,7 @@ def parse():
         environment variables:
           USER               the user whose password can be used to unlock the session
           XDG_VTNR           the tty number to open and return to after unlocking
+                             if unset, falls back to reading /sys/class/tty/tty0/active
           MOTD               the message to display while locked
         """)
     )
@@ -125,7 +126,7 @@ def setup_vt():
     global nvt
     global oldmode
 
-    nnr = 63
+    nnr = vt.LOCK_VTNR
     nvt = vt.open_console(nnr)
     setup_term()
 

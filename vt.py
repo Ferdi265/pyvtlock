@@ -41,6 +41,8 @@ VT_EVENT_UNBLANK = 4
 VT_EVENT_RESIZE = 8
 VT_EVENT_MAX = 0xF
 
+LOCK_VTNR = 63
+
 class VtMode:
     FMT = "bbhhh"
     def __init__(self, m, wv, rs, qs, fs):
@@ -104,12 +106,26 @@ def open_console(nr):
     return io.TextIOWrapper(open("/dev/tty{}".format(nr), "r+b", buffering = 0), encoding = "UTF-8", write_through = True)
 
 def get_active_console():
-    try:
-        nr = int(os.environ["XDG_VTNR"], 10)
-    except KeyError as e:
-        raise RuntimeError("XDG_VTNR does not exist") from e
-    except ValueError as e:
-        raise RuntimeError("XDG_VTNR is not a valid number") from e
+    if "XDG_VTNR" in os.environ:
+        try:
+            nr = int(os.environ["XDG_VTNR"], 10)
+        except ValueError as e:
+            raise RuntimeError("XDG_VTNR is not a valid number") from e
+    else:
+        try:
+            with open("/sys/class/tty/tty0/active", "r") as f:
+                ttyname = f.read()
+                assert ttyname.startswith("tty"), "VT name must start with 'tty'"
+                nr = int(ttyname[3:])
+        except AssertionError as e:
+            raise RuntimeError("VT name must start with 'tty'") from e
+        except ValueError as e:
+            raise RuntimeError("Active VT number is not a valid number") from e
+        except Exception as e:
+            raise RuntimeError("Failed to determine active tty") from e
+
+    if nr == LOCK_VTNR:
+        raise RuntimeError("VT number must not be the same as the lock TTY (tty{})".format(LOCK_VTNR))
 
     return nr
 
