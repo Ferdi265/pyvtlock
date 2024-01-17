@@ -14,6 +14,8 @@ import vt
 from forksignal import Signal
 
 CLEAR_TERM = b"\x1b[2J\x1b[H"
+DISABLE_CURSOR = b"\x1b[?25l\x1b[?1c"
+ENABLE_CURSOR = b"\x1b[?25h\x1b[?0c"
 USER = os.environ["USER"]
 HOST = socket.gethostname()
 MOTD = os.environb.get(b"MOTD", b"\x1b[1;37m<< \x1b[1;36mpyvtlock \x1b[1;37m>>\x1b[0m\n")
@@ -186,7 +188,7 @@ def lock_loop():
 
 def lock_iteration():
     lock_motd()
-    read_pwd("", False)
+    read_pwd("", newline = False, blink = False)
 
     p = pam.pam()
     pwd = read_pwd("Password: ")
@@ -201,12 +203,19 @@ def lock_motd():
     write_bytes(nvt, CLEAR_TERM + MOTD + b"\n")
     print("{} locked by {}".format(HOST, USER), file = nvt)
 
-def read_pwd(prompt, newline = True):
+def read_pwd(prompt, newline = True, blink = True):
     print(prompt, end = "", file = nvt)
+
+    if blink:
+        write_bytes(nvt, ENABLE_CURSOR)
+    else:
+        write_bytes(nvt, DISABLE_CURSOR)
 
     data = nvt.readline()
     if data[-1] == "\n":
         data = data[:-1]
+
+    write_bytes(nvt, DISABLE_CURSOR)
 
     if newline:
         print(file = nvt)
