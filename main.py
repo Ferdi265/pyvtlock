@@ -85,7 +85,7 @@ def main(args):
         print(os.getpid())
 
     if args.pidfile != None:
-        pidfd.write("{}\n".format(os.getpid()))
+        pidfd.write(f"{os.getpid()}\n")
         pidfd.close()
 
     time.sleep(.1)
@@ -195,13 +195,13 @@ def lock_iteration():
     if p.authenticate(USER, pwd):
         return True
     else:
-        print("pyvtlock: {}".format(p.reason), file = nvt)
+        print(f"pyvtlock: {p.reason}", file = nvt)
         time.sleep(1.5)
         return False
 
 def lock_motd():
     write_bytes(nvt, CLEAR_TERM + MOTD + b"\n")
-    print("{} locked by {}".format(HOST, USER), file = nvt)
+    print(f"{HOST} locked by {USER}", file = nvt)
 
 def read_pwd(prompt, newline = True, blink = True):
     print(prompt, end = "", file = nvt)

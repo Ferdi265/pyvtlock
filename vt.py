@@ -100,10 +100,14 @@ class VtEvent:
         self.pad3 = p3
 
     def __repr__(self):
-        return "<VtEvent {}>".format(self.__dict__)
+        return ("VtEvent(" +
+            f"event = {self.event!r}, " +
+            f"oldev = {self.oldev!r}, " +
+            f"newev = {self.newev!r}" +
+        ")")
 
 def open_console(nr):
-    return io.TextIOWrapper(open("/dev/tty{}".format(nr), "r+b", buffering = 0), encoding = "UTF-8", write_through = True)
+    return io.TextIOWrapper(open(f"/dev/tty{nr}", "r+b", buffering = 0), encoding = "UTF-8", write_through = True)
 
 def get_active_console():
     if "XDG_VTNR" in os.environ:
@@ -125,7 +129,7 @@ def get_active_console():
             raise RuntimeError("Failed to determine active tty") from e
 
     if nr == LOCK_VTNR:
-        raise RuntimeError("VT number must not be the same as the lock TTY (tty{})".format(LOCK_VTNR))
+        raise RuntimeError(f"VT number must not be the same as the lock TTY (tty{LOCK_VTNR})")
 
     return nr
 
