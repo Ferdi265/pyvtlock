@@ -53,7 +53,13 @@ class VtMode:
         self.frsig = fs
 
     def __repr__(self):
-        return "<VtMode {}>".format(self.__dict__)
+        return ("VtMode(" +
+            f"mode = {self.mode!r}, " +
+            f"waitv = {self.waitv!r}, " +
+            f"relsig = {self.relsig!r}, " +
+            f"acqsig = {self.acqsig!r}, " +
+            f"frsig = {self.frsig!r}" +
+        ")")
 
 class VtStat:
     FMT = "HHH"
@@ -63,7 +69,11 @@ class VtStat:
         self.state = st
 
     def __repr__(self):
-        return "<VtStat {}>".format(self.__dict__)
+        return ("VtStat(" +
+            f"active = {self.active!r}, " +
+            f"signal = {self.signal!r}, " +
+            f"state = {self.state!r}" +
+        ")")
 
 class VtSizes:
     FMT = "HHH"
@@ -73,7 +83,11 @@ class VtSizes:
         self.scrollsize = s
 
     def __repr__(self):
-        return "<VtSizes {}>".format(self.__dict__)
+        return ("VtSizes(" +
+            f"rows = {self.rows!r}, " +
+            f"cols = {self.cols!r}, " +
+            f"scrollsize = {self.scrollsize!r}" +
+        ")")
 
 class VtConSize:
     FMT = "HHHHHH"
@@ -86,7 +100,14 @@ class VtConSize:
         self.ccol = cc
 
     def __repr__(self):
-        return "<VtSizes {}>".format(self.__dict__)
+        return ("VtConSize(" +
+            f"rows = {self.rows!r}, " +
+            f"cols = {self.cols!r}, " +
+            f"scrollsize = {self.scrollsize!r}, " +
+            f"clin = {self.clin!r}, " +
+            f"vcol = {self.vcol!r}, " +
+            f"ccol = {self.ccol!r}" +
+        ")")
 
 class VtEvent:
     FMT = "IIIIIII"
