@@ -11,6 +11,7 @@ from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 import vt
+import pam_interactive
 from forksignal import Signal
 
 CLEAR_TERM = b"\x1b[2J\x1b[H"
@@ -186,13 +187,25 @@ def lock_loop():
     while not lock_iteration():
         pass
 
+class NewVTPamAuthenticator(pam_interactive.InteractivePamAuthenticator):
+    def info(self, text: str):
+        print(text, file = nvt)
+
+    def error(self, text: str):
+        print(text, file = nvt)
+
+    def prompt(self, text: str):
+        return read_pwd(text)
+
+    def prompt_silent(self, text: str):
+        return read_pwd(text)
+
 def lock_iteration():
     lock_motd()
     read_pwd("", newline = False, blink = False)
 
-    p = pam.pam()
-    pwd = read_pwd("Password: ")
-    if p.authenticate(USER, pwd):
+    p = NewVTPamAuthenticator()
+    if p.authenticate(USER):
         return True
     else:
         print(f"pyvtlock: {p.reason}", file = nvt)
