@@ -28,6 +28,7 @@ install: cap/capwrap
 	install -D -m 644 main.py '$(DESTDIR)/$(PREFIX)/lib/pyvtlock/main.py'
 	install -D -m 644 vt.py '$(DESTDIR)/$(PREFIX)/lib/pyvtlock/vt.py'
 	install -D -m 644 forksignal.py '$(DESTDIR)/$(PREFIX)/lib/pyvtlock/forksignal.py'
+	install -D -m 644 pam_interactive.py '$(DESTDIR)/$(PREFIX)/lib/pyvtlock/pam_interactive.py'
 	mkdir -p '$(DESTDIR)/$(PREFIX)/bin'
 	ln -sf '$(PREFIX)/lib/pyvtlock/capwrap' '$(DESTDIR)/$(PREFIX)/bin/pyvtlock'
 
